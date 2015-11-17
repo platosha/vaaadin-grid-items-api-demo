@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="page-github-issues">
+  <template>
+    <style include="../../styles/shared-styles.html">
+      :host {
+        display: block;
+        @apply(--layout-fit);
+        @apply(--layout-vertical);
+      }
+
+      #grid {
+        @apply(--layout-flex);
+        }
+
+    </style>
+    <vaadin-grid id="grid">
+      <table>
+        <colgroup>
+          <col name="number">
+          <col name="title">
+        </colgroup>
+      </table>
+    </vaadin-grid>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'page-github-issues',
+        properties: {
+          items: {
+            type: Array,
+            notify: true,
+          }
+        },
+        ready: function() {
+
+          var items = [];
+          var itemsPerPage = 10;
+          var requestedPages = [];
+
+          function requestDataPage(page, itemsPerPage) {
+
+            return document.createElement('iron-request').send({
+              url: 'https://api.github.com/repos/vaadin/vaadin-grid/issues' +
+                      '?page=' + page +
+                      '&per_page=' + itemsPerPage +
+                      '&client_id=25bab8af282e7e8b9803' +
+                      '&client_secret=370a91f1bcb06ee9238016af8574354d716a9c0f',
+              method: 'GET',
+              handleAs: 'json'
+            }).then(function(req) {
+
+              // Add the received items to the data array,
+              // respecting correct indexes for the page
+              Array.prototype.splice.apply(
+                items,
+                Array.prototype.concat.apply(
+                  [ (page - 1) * itemsPerPage, req.response.length ],
+                  req.response
+                )
+              );
+
+              if (req.response.length >= itemsPerPage) {
+                // If the number of items received items is not less than
+                // a number of items per page, then assume there's a next page
+                if (page * itemsPerPage >= items.length) {
+                  // If not exists yet, put a null placeholder for the first
+                  // item of the next page
+                  items[ page * itemsPerPage ] = null;
+                }
+              } else {
+                // Otherwise it's a last page, remove the null placeholder
+                if (items[items.length - 1] === null) {
+                  items.pop();
+                }
+              }
+
+            });
+
+          }
+
+          function getDataPage(page, itemsPerPage) {
+            if (!requestedPages[page]) {
+              requestedPages[page] = true;
+              return requestDataPage(page, itemsPerPage);
+            } else {
+              return Promise.resolve();
+            }
+          }
+
+          function pageForItem(item) {
+            return Math.max(0, Math.floor(item / itemsPerPage)) + 1;
+          }
+
+          this.$.grid.items = function(params, callback) {
+
+            var sequence = Promise.resolve();
+
+            function makeSequencedPageRequest(page) {
+              sequence = sequence.then(function() {
+                return getDataPage(page, itemsPerPage);
+              });
+            }
+
+            // Cycle through requested pages, because the requested items count
+            // could be more than could be loaded with one request
+            for (
+                var page = pageForItem(params.index);
+                page <= pageForItem(params.index + params.count - 1);
+                page++) {
+              makeSequencedPageRequest(page);
+            }
+
+            // When all requests are done, invoke the callback
+            sequence.then(function() {
+              callback(
+                items.slice( params.index, params.index + params.count),
+                items.length
+              );
+            });
+
+          };
+
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
