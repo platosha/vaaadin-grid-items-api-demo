@@ -20,10 +20,6 @@ limitations under the License.
 <script>
   window.addEventListener('WebComponentsReady', function() {
 
-    page({
-      hashbang: true
-    });
-
     function scrollToTop(ctx, next) {
       app.scrollPageToTop();
       next();
@@ -35,6 +31,10 @@ limitations under the License.
 
     page('/:page', scrollToTop, function(ctx) {
       app.route = ctx.params.page;
+    });
+
+    page({
+      hashbang: true
     });
 
   });
