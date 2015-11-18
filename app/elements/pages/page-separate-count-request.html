@@ -1,0 +1,112 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="page-separate-count-request">
+  <template>
+    <style include="../../styles/shared-styles.html">
+      :host {
+        display: block;
+        @apply(--layout-fit);
+        @apply(--layout-vertical);
+      }
+
+      #grid {
+        @apply(--layout-flex);
+        }
+
+    </style>
+    <vaadin-grid id="grid">
+      <table>
+        <colgroup>
+          <col name="number">
+          <col name="title">
+        </colgroup>
+      </table>
+    </vaadin-grid>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'page-separate-count-request',
+        properties: {
+          items: {
+            type: Array,
+            notify: true,
+          }
+        },
+        ready: function() {
+
+          var grid = this.$.grid;
+
+          var items = [];
+
+          function requestItemsCount() {
+            return document.createElement('iron-request').send({
+              url: '/api/issues?_limit=0',
+              method: 'GET',
+              handleAs: 'json'
+            }).then(function(req) {
+              return parseInt(req.xhr.getResponseHeader('X-Total-Count'), 10);
+            });
+          }
+
+          requestItemsCount().then(function(count) {
+            if (items.length < count) {
+              items[count - 1] = null;
+            }
+            grid.clearCache();
+          });
+
+          function requestItems(offset, limit) {
+
+            return document.createElement('iron-request').send({
+              url: '/api/issues' +
+                      '?_offset=' + offset + 
+                      '&_limit=' + limit,
+              method: 'GET',
+              handleAs: 'json'
+            }).then(function(req) {
+
+              // Add the received items to the data array,
+              // respecting correct indexes for the page
+              Array.prototype.splice.apply(
+                items,
+                Array.prototype.concat.apply(
+                  [ offset, req.response.length ],
+                  req.response
+                )
+              );
+
+            });
+
+          }
+
+          this.$.grid.items = function(params, callback) {
+
+            var minIndex = params.index,
+              maxIndex = params.index + params.count - 1;
+
+            while (items[minIndex] != null) minIndex++;
+            while (items[maxIndex] != null && maxIndex >= minIndex) maxIndex--;
+
+            var request = maxIndex < minIndex ?
+              Promise.resolve() :
+                requestItems(minIndex, maxIndex - minIndex + 1);
+
+            request.then(function() {
+              callback(
+                items.slice( params.index, params.index + params.count),
+                items.length
+              );
+            });
+
+          };
+
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

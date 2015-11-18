@@ -74,10 +74,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <!-- Drawer Content -->
         <paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+
+          <paper-item disabled="">
+            <h4>Case 1: separate count request</h4>
+          </paper-item>
+          <a data-route="home" href="/" on-click="onDataRouteClick" colored>
+            <iron-icon icon="list"></iron-icon>
+            <span>JSON Server</span>
+          </a>
+
           <paper-item disabled="">
             <h4>Case 3: no count available</h4>
           </paper-item>
-          <a data-route="home" href="/" on-click="onDataRouteClick" colored>
+          <a data-route="github-issues" href="/github-issues" on-click="onDataRouteClick" colored>
             <iron-icon icon="list"></iron-icon>
             <span>GitHub Issues</span>
           </a>
@@ -103,7 +112,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="content">
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-            <page-github-issues data-route="home"></page-github-issues>
+            <page-separate-count-request data-route="home"></page-separate-count-request>
 
             <page-github-issues data-route="github-issues"></page-github-issues>
 

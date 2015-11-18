@@ -24,6 +24,7 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var polybuild = require('polybuild');
+var jsonServer = require('json-server');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -246,7 +247,12 @@ gulp.task('serve', ['styles', 'elements', 'images'], function () {
     // https: true,
     server: {
       baseDir: ['.tmp', 'app'],
-      middleware: [ historyApiFallback() ],
+      middleware: [
+        jsonServer
+          .create()
+          .use('/api', jsonServer.router('db.json')),
+        historyApiFallback()
+      ],
       routes: {
         '/bower_components': 'bower_components'
       }
@@ -279,7 +285,12 @@ gulp.task('serve:dist', ['default'], function () {
     //       will present a certificate warning in the browser.
     // https: true,
     server: 'dist',
-    middleware: [ historyApiFallback() ]
+    middleware: [
+      jsonServer
+        .create()
+        .use('/api', jsonServer.router('db.json')),
+      historyApiFallback()
+    ]
   });
 });
 
