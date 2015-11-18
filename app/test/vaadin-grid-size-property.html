@@ -1,0 +1,98 @@
+<!--
+
+Copyright 2015 Vaadin Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script src="../../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../../../vaadin-grid/vaadin-grid.html">
+  <link rel="import" href="../elements/vaadin-grid-has-size-property.html">
+</head>
+<body>
+
+  <vaadin-grid id="grid">
+    <table>
+      <colgroup>
+        <col name="number">
+        <col name="title">
+      </colgroup>
+    </table>
+  </vaadin-grid>
+
+  <script>
+
+    describe('vaadin-grid size property', function() {
+
+      var grid = document.getElementById('grid');
+
+      var itemsProperty = 'sizedItems';
+
+      var items = [
+        { number: 1234, title: 'Foo' },
+        { number: 2345, title: 'Bar' },
+      ];
+
+      before(function() {
+        window.VaadinGridHasSizeProperty(grid);
+      });
+
+      it('should accept integer size', function() {
+        grid.size = 5;
+        assert.equal(grid.size, 5);
+      });
+
+      it('should reflect items array size', function() {
+        grid[itemsProperty] = items;
+        assert.equal(grid.size, items.length);
+      });
+
+      it('should accept function datasource without passing size through callback', function() {
+        grid.size = items.length;
+        var dataSource = function(params, callback) {
+          callback(
+            items.slice(params.index, params.index + params.count)
+          );
+        };
+        var spy = sinon.spy(dataSource);
+        grid[itemsProperty] = spy;
+        grid.then(function() {
+          Polymer.dom(grid.root).querySelectorAll('.vaadin-grid-body .vaadin-grid-row').forEach(function(row, rowIndex) {
+            var cells = row.querySelectorAll('.vaadin-grid-cell')
+              .map(function(cell) {
+                return cell.textContent;
+              })
+            assert.equal(cells[0], items[rowIndex].number.toString());
+            assert.equal(cells[1], items[rowIndex].title);
+          });
+          var callCount = spy.callCount;
+          grid.getItem(2, function(err, item) {
+            expect(err).to.exist;
+            expect(spy.callCount).to.eql(callCount);
+          });
+        });
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>

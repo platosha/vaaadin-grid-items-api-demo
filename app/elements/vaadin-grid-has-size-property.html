@@ -1,0 +1,68 @@
+<!--
+
+Copyright 2015 Vaadin Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+<script>
+
+  window.VaadinGridHasSizeProperty = function(grid) {
+
+    var size = (grid.items && grid.items.length) || 0;
+
+    Object.defineProperty(grid, 'size', {
+
+      get: function() {
+        return size;
+      },
+
+      set: function(newSize) {
+        size = newSize;
+        grid.clearCache(size);
+      }
+
+    });
+
+    var _items = undefined;
+
+    var itemsDataSource = function(params, callback) {
+      _items(params, function(items) {
+        callback(items, grid.size);
+      });
+    }
+
+    Object.defineProperty(grid, 'sizedItems', {
+
+      get: function() {
+        return _items;
+      },
+
+      set: function(items) {
+        _items = items;
+        if (typeof items === 'function') {
+          grid.items = itemsDataSource;
+        } else {
+          grid.items = items;
+          grid.size = items.length || 0;
+        }
+      }
+
+    });
+
+    return grid;
+
+  }
+
+</script>

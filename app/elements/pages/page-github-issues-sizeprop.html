@@ -61,6 +61,8 @@ limitations under the License.
           var requestedPages = [];
 
           var grid = this.$.grid;
+          window.VaadinGridHasSizeProperty(grid);
+
           grid.size = 0;
 
           function requestDataPage(page, itemsPerPage) {
@@ -116,7 +118,7 @@ limitations under the License.
             return Math.max(0, Math.floor(item / itemsPerPage)) + 1;
           }
 
-          this.$.grid.items = function(params, callback) {
+          grid.sizedItems = function(params, callback) {
 
             var sequence = Promise.resolve();
 
@@ -137,8 +139,7 @@ limitations under the License.
 
             sequence.then(function() {
               callback(
-                items.slice( params.index, params.index + params.count),
-                grid.size
+                items.slice( params.index, params.index + params.count)
               );
             });
 
