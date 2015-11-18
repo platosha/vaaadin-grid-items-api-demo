@@ -25,10 +25,17 @@ limitations under the License.
     Object.defineProperty(grid, 'size', {
 
       get: function() {
-        return size;
+        if (grid.sizedItems && Array.isArray(grid.sizedItems)) {
+          return grid.sizedItems.length
+        } else {
+          return size;
+        }
       },
 
       set: function(newSize) {
+        if (grid.sizedItems && Array.isArray(grid.sizedItems)) {
+          return undefined;
+        }
         if (newSize !== size) {
           size = newSize;
           grid.clearCache(size);

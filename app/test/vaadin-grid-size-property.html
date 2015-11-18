@@ -75,6 +75,13 @@ limitations under the License.
         assert.equal(grid.size, items.length);
       });
 
+      it('setting size should not have any effect if using items array datasource', function() {
+        grid[itemsProperty] = items;
+        var sizeBeforeChange = grid.size;
+        grid.size = grid.size + 1;
+        assert.equal(grid.size, sizeBeforeChange);
+      });
+
       it('should accept function datasource without passing size through callback', function() {
         grid.size = items.length;
         var dataSource = function(params, callback) {
