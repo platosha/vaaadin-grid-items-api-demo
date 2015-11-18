@@ -35,13 +35,13 @@ limitations under the License.
 
     });
 
-    var _items = undefined;
+    var _items = grid.items;
 
     var itemsDataSource = function(params, callback) {
       _items(params, function(items) {
         callback(items, grid.size);
       });
-    }
+    };
 
     Object.defineProperty(grid, 'sizedItems', {
 
@@ -63,6 +63,6 @@ limitations under the License.
 
     return grid;
 
-  }
+  };
 
 </script>

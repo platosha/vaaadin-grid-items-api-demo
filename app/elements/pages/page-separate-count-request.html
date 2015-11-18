@@ -110,8 +110,10 @@ limitations under the License.
             var minIndex = params.index,
               maxIndex = params.index + params.count - 1;
 
-            while (items[minIndex] != null) minIndex++;
-            while (items[maxIndex] != null && maxIndex >= minIndex) maxIndex--;
+            while (items[minIndex] && minIndex <= maxIndex) { minIndex++; }
+            while (items[maxIndex] && maxIndex >= minIndex) { maxIndex--; }
+
+            console.log(params, minIndex, maxIndex, maxIndex < minIndex);
 
             var request = maxIndex < minIndex ?
               Promise.resolve() :
