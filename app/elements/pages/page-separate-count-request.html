@@ -70,14 +70,6 @@ limitations under the License.
             });
           }
 
-          requestItemsCount().then(function(count) {
-            if (items.length < count) {
-              items[count - 1] = null;
-            }
-            // Retrigger items loading
-            grid.clearCache();
-          });
-
           function requestItems(offset, limit) {
 
             return document.createElement('iron-request').send({
@@ -101,6 +93,17 @@ limitations under the License.
             });
 
           }
+
+          requestItemsCount().then(function(count) {
+
+            if (items.length < count) {
+              items[count - 1] = null;
+            }
+
+            // Retrigger items loading
+            grid.clearCache();
+
+          });
 
           this.$.grid.items = function(params, callback) {
 
