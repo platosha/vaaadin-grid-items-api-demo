@@ -85,6 +85,8 @@ limitations under the License.
               var count = parseInt(req.xhr.getResponseHeader('X-Total-Count'), 10);
               grid.size = count;
 
+              return req.response;
+
             });
 
           }
