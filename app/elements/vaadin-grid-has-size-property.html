@@ -29,8 +29,10 @@ limitations under the License.
       },
 
       set: function(newSize) {
-        size = newSize;
-        grid.clearCache(size);
+        if (newSize !== size) {
+          size = newSize;
+          grid.clearCache(size);
+        }
       }
 
     });

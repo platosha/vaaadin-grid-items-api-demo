@@ -59,6 +59,17 @@ limitations under the License.
         assert.equal(grid.size, 5);
       });
 
+      it('should invoke clearCache when and only when the size has changed', function() {
+        grid.size = 1;
+        var _oldClearCache = grid.clearCache;
+        grid.clearCache = sinon.spy(_oldClearCache);
+        grid.size = 3;
+        expect(grid.clearCache).to.have.been.called;
+        grid.size = 3;
+        expect(grid.clearCache).to.have.been.calledOnce;
+        grid.clearCache = _oldClearCache;
+      });
+
       it('should reflect items array size', function() {
         grid[itemsProperty] = items;
         assert.equal(grid.size, items.length);
