@@ -82,6 +82,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <iron-icon icon="list"></iron-icon>
             <span>JSON Server</span>
           </a>
+          <a data-route="separate-count-request-sizeprop" href="/separate-count-request-sizeprop" on-click="onDataRouteClick" colored>
+            <iron-icon icon="list"></iron-icon>
+            <span>... with Size Property</span>
+          </a>
 
           <paper-item disabled="">
             <h4>Case 3: no count available</h4>
@@ -113,6 +117,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
             <page-separate-count-request data-route="home"></page-separate-count-request>
+
+            <page-separate-count-request-sizeprop data-route="separate-count-request-sizeprop"></page-separate-count-request-sizeprop>
 
             <page-github-issues data-route="github-issues"></page-github-issues>
 
