@@ -9,7 +9,8 @@
     "neon-elements": "PolymerElements/neon-elements#^1.0.0",
     "page": "visionmedia/page.js#~1.6.3",
     "vaadin-grid": "~0.9",
-    "promise-polyfill": "~2.1.0"
+    "promise-polyfill": "~2.1.0",
+    "faker": "~0.0.2"
   },
   "devDependencies": {
     "web-component-tester": "*",
