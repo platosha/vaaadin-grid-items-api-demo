@@ -67,6 +67,8 @@ limitations under the License.
 
           function requestDataPage(page, itemsPerPage) {
 
+            // console.log('requested page', page);
+
             return document.createElement('iron-request').send({
               url: 'https://api.github.com/repos/vaadin/vaadin-grid/issues' +
                       '?page=' + page +
@@ -76,6 +78,8 @@ limitations under the License.
               method: 'GET',
               handleAs: 'json'
             }).then(function(req) {
+
+              // console.log('response for page', page);
 
               // Add the received items to the data array,
               // respecting correct indexes for the page
@@ -108,6 +112,7 @@ limitations under the License.
           }
 
           function getDataPage(page, itemsPerPage) {
+            // console.log('need page', page);
             if (!requestedPages[page]) {
               requestedPages[page] = true;
               return requestDataPage(page, itemsPerPage);
@@ -121,6 +126,8 @@ limitations under the License.
           }
 
           grid.sizedItems = function(params, callback) {
+
+            // console.log(params);
 
             var sequence = Promise.resolve();
 
