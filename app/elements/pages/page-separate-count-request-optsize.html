@@ -1,0 +1,115 @@
+<!--
+
+Copyright 2015 Vaadin Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="page-separate-count-request-optsize">
+  <template>
+    <style include="../../styles/shared-styles.html">
+      :host {
+        display: block;
+        @apply(--layout-fit);
+        @apply(--layout-vertical);
+      }
+
+      #grid {
+        @apply(--layout-flex);
+        }
+
+    </style>
+    <vaadin-grid id="grid">
+      <table>
+        <colgroup>
+          <col name="number">
+          <col name="title">
+        </colgroup>
+      </table>
+    </vaadin-grid>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'page-separate-count-request-optsize',
+        properties: {
+          items: {
+            type: Array,
+            notify: true,
+          }
+        },
+        ready: function() {
+
+          var grid = this.$.grid;
+
+          var items = [];
+
+          function requestItemsCount() {
+            return document.createElement('iron-request').send({
+              url: '/api/issues?_limit=0',
+              method: 'GET',
+              handleAs: 'json'
+            }).then(function(req) {
+              return parseInt(req.xhr.getResponseHeader('X-Total-Count'), 10);
+            });
+          }
+
+          function requestItems(offset, limit) {
+
+            return document.createElement('iron-request').send({
+              url: '/api/issues' +
+                      '?_offset=' + offset + 
+                      '&_limit=' + limit,
+              method: 'GET',
+              handleAs: 'json'
+            }).then(function(req) {
+
+              // Add the received items to the data array,
+              // respecting correct indexes for the page
+              Array.prototype.splice.apply(
+                items,
+                Array.prototype.concat.apply(
+                  [ offset, req.response.length ],
+                  req.response
+                )
+              );
+
+              return req.response;
+
+            });
+
+          }
+
+          requestItemsCount().then(function(count) {
+            // console.log(count);
+            grid.clearCache(size);
+          });
+
+          this.$.grid.items = function(params, callback) {
+            // console.log(params);
+            requestItems(params.index, params.count)
+              .then(callback);
+          };
+
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
